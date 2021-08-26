@@ -27,13 +27,20 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# Custom authentications backend
+AUTHENTICATION_BACKENDS = ['users.auth.CustomAuthBackend']
 
 # Application definition
 
 INSTALLED_APPS = [
-    'reviews',
-    'users',
-    'handlers',
+    'authors.apps.AuthorsConfig',
+    'genres.apps.GenresConfig',
+    'books.apps.BooksConfig',
+    'reviews.apps.ReviewsConfig',
+    'comments.apps.CommentsConfig',
+    'users.apps.UsersConfig',
+    'handlers.apps.HandlersConfig',
+
     'crispy_forms',
     'django_extensions',
 
@@ -79,14 +86,6 @@ WSGI_APPLICATION = 'django_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# psql --username=postgres --dbname=django_books_db
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
