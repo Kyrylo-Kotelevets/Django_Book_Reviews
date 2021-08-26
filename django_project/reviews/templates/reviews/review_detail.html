@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+    <article class="media content-section">
+        <div class="media-body">
+            {% if is_have_rights %}
+                <div class="d-flex justify-content-md-between mb-4">
+                    <a class="btn btn-secondary btn-sm mb-1" style="width: 49%" href="{% url 'review-update' review.id %}">Update</a>
+                    <a class="btn btn-danger btn-sm mb-1" style="width: 49%" href="{% url 'review-delete' review.id %}">Delete</a>
+                </div>
+            {% endif %}
+
+            <div class="article-metadata">
+                <a href="{% url 'user-review' review.creator.username %}">{{ review.creator.username }}</a>`s review on
+                <a href="{% url 'book-detail' review.book.pk %}">"{{ review.book.short_title }}"</a> book
+                <small class="text-muted mt-1" style="float: right">{{ review.date_posted|date:"F d, Y" }}</small>
+            </div>
+
+            <h2><a class="article-title" href="#">{{ review.title }}</a></h2>
+            <p class="article-content text-justify">{{ review.text }}</p>
+        </div>
+    </article>
+
+    <div>
+        {% if comments %}
+            <h1 class="mt-2" style="text-align: center">Comments</h1>
+            <hr/>
+            <div class="col text-center mb-3">
+                <a class="btn btn-success btn-add-review" style="width: 100%" href="{% url 'comment-add' review.pk %}">Add Your Own Comment</a>
+            </div>
+        {% else %}
+            <div class="col text-center mb-3">
+                <a class="btn btn-success btn-add-review" style="width: 100%" href="{% url 'comment-add' review.pk %}">Add First Comment!</a>
+            </div>
+        {% endif %}
+    </div>
+
+    {% for comment in comments %}
+        <article class="media content-section">
+            <img class="rounded-circle article-img" src="{{ comment.creator.profile.image.url }}">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <a href="{% url 'user-comment' comment.creator.username %}">{{ comment.creator.username }}</a>`s
+                    <a href="{% url 'comment-detail' comment.pk %}">comment</a>
+                    <small class="text-muted" style="float: right">{{ comment.date_posted|date:"F d, Y" }}</small>
+                </div>
+                <p class="article-content text-justify">{{ comment.short_text }}</p>
+            </div>
+        </article>
+    {% endfor %}
+
+    {% if page_obj.paginator.num_pages != 1 %}
+        <div style="margin: auto;text-align: center;">
+            {% if page_obj.has_previous %}
+                <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <a class="btn btn-primary mb-4" href="?page={{ num }}">{{ num }}</a>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock content %}

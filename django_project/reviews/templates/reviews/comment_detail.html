@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+    <article class="media content-section">
+        <div class="media-body">
+            {% if is_have_rights %}
+                <div class="d-flex justify-content-md-between mb-3">
+                    <a class="btn btn-secondary btn-sm mb-1" style="width: 49%" href="{% url 'comment-update' comment.id %}">Update</a>
+                    <a class="btn btn-danger btn-sm mb-1" style="width: 49%" href="{% url 'comment-delete' comment.id %}">Delete</a>
+                </div>
+            {% endif %}
+
+            <div class="article-metadata">
+                <a href="{% url 'user-comment' comment.creator.username %}">{{ comment.creator.username }}</a>`s comment on
+                {{ comment.review.creator.username }}`s
+                <a href="{% url 'review-detail' comment.review.pk %}">review</a>
+                <small class="text-muted mt-1" style="float: right">{{ comment.date_posted|date:"F d, Y" }}</small>
+            </div>
+
+            <p class="article-content">{{ comment.text }}</p>
+        </div>
+    </article>
+{% endblock content %}

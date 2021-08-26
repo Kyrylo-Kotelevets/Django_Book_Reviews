@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4" style="text-align: center">Delete Comment</legend>
+                <h4>
+                    Are you sure you want to delete <a href="{% url 'comment-detail' object.pk %}">comment</a>
+                    for the <a href="{% url 'review-detail' object.review.pk %}">review</a>?
+                </h4>
+            </fieldset>
+            <div class="d-flex justify-content-md-between">
+                <button class="btn btn-outline-danger" style="width: 49%" type="submit">Yes, delete</button>
+                <a class="btn btn-outline-secondary" style="width: 49%" href="{% url 'comment-detail' object.pk %}">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

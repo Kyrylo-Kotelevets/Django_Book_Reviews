@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block search %}
+    <form class="nav-item nav-link" action="{% url 'blog-home' %}" method="GET">
+        {% if search_val %}
+            <input name="search" type="text" value="{{ search_val }}">
+        {% else %}
+            <input name="search" type="text" placeholder="Type for search...">
+        {% endif %}
+    </form>
+{% endblock %}
+
+{% block content %}
+    <h2 style="text-align: center">All books</h2>
+    <hr/>
+
+    {% if search_val %}
+        {% if reviews %}
+            <h2 style="text-align: center">Search results for "{{ search_val }}"</h2>
+        {% else %}
+            <h2 style="text-align: center">Nothing to show for "{{ search_val }}"</h2>
+        {% endif %}
+    {% endif %}
+
+    {% if is_moderator %}
+        <div>
+            <div class="col text-center mb-3">
+                {% if books %}
+                    <a class="btn btn-success btn-add-review" style="width: 100%" href="{% url 'book-add'%}">Add New Book</a>
+                {% else %}
+                    <a class="btn btn-success btn-add-review" style="width: 100%" href="{% url 'book-add'%}">Add First Book!</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% for book in books %}
+        <article class="media content-section">
+            <img class="cover" src="{{ book.cover_img.url }}">
+            <div class="media-body">
+
+                <div class="article-metadata">
+                    <a class="mr-2" style="font-size: 30px" href="{% url 'book-detail' book.id %}">{{ book.title }}</a>
+                    <h6 class="text-muted" style="float: right">Rating: {{ book.rating }}</h6>
+                </div>
+
+                <h5>Authors:</h5>
+                <ul>
+                    {% for author in book.authors.all %}
+                    <li><a href="#" class="no-style-link">{{ author }}</a></li>
+                    {% endfor %}
+                </ul>
+
+                <h5>Genres:</h5>
+                <ul>
+                    {% for genre in book.genres.all %}
+                    <li><a href="#" class="no-style-link">{{ genre }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </article>
+    {% endfor %}
+
+    {% if is_paginated %}
+        <div style="margin: auto;text-align: center;">
+            {% if page_obj.has_previous %}
+                <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <a class="btn btn-primary mb-4" href="?page={{ num }}">{{ num }}</a>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
+                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock content %}
