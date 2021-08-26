@@ -109,3 +109,8 @@ a.article-title:hover {
 .center-title {
   text-align: center;
 }
+
+.rating {
+  border: 2px solid #DCDCDC;
+  border-radius: 5px;
+}

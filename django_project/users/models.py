@@ -4,6 +4,9 @@ from PIL import Image
 
 
 class Profile(models.Model):
+    """
+    User`s Profile Model
+    """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(default='profile_pics/default.png', upload_to='profile_pics')
 
@@ -11,6 +14,9 @@ class Profile(models.Model):
         return f'{self.user.username} Profile'
 
     def save(self, *args, **kwargs):
+        """
+        Resizes profile image if its too bog
+        """
         super().save(*args, **kwargs)
 
         img = Image.open(self.image.path)

@@ -5,8 +5,12 @@ from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 
 
 def register(request):
+    """
+    User Registration
+    """
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
+
         if form.is_valid():
             form.save()
             messages.success(request, f'Your account has been created! You are now able to log in.')
@@ -18,6 +22,9 @@ def register(request):
 
 @login_required
 def profile(request):
+    """
+    User Profile Updating and Displaying
+    """
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST,
                                 instance=request.user)

@@ -10,7 +10,8 @@
             {% endif %}
 
             <div class="article-metadata">
-                <a href="{% url 'user-review' review.creator.username %}">{{ review.creator.username }}</a>`s review on
+                <b>{{ review.rating }} / 10</b>
+                <a class="ml-2" href="{% url 'user-review' review.creator.username %}">{{ review.creator.username }}</a>`s review on
                 <a href="{% url 'book-detail' review.book.pk %}">"{{ review.book.short_title }}"</a> book
                 <small class="text-muted mt-1" style="float: right">{{ review.date_posted|date:"F d, Y" }}</small>
             </div>
@@ -24,10 +25,13 @@
         {% if comments %}
             <h1 class="mt-2" style="text-align: center">Comments</h1>
             <hr/>
-            <div class="col text-center mb-3">
-                <a class="btn btn-success btn-add-review" style="width: 100%" href="{% url 'comment-add' review.pk %}">Add Your Own Comment</a>
-            </div>
-        {% else %}
+
+            {% if can_comment %}
+                <div class="col text-center mb-3">
+                    <a class="btn btn-success btn-add-review" style="width: 100%" href="{% url 'comment-add' review.pk %}">Add Your Own Comment</a>
+                </div>
+            {% endif %}
+        {% elif can_comment %}
             <div class="col text-center mb-3">
                 <a class="btn btn-success btn-add-review" style="width: 100%" href="{% url 'comment-add' review.pk %}">Add First Comment!</a>
             </div>

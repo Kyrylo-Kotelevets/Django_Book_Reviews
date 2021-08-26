@@ -24,11 +24,15 @@
                         {% endfor %}
                     </h5>
 
-                    <h5 class="card-subtitle text-muted mt-1 mb-4" style="text-align: center">
+                    <h5 class="card-subtitle text-muted mt-1 mb-1" style="text-align: center">
                         Genres:
                         {% for genre in book.genres.all %}
                             <a href="#" class="no-style-link">{{ genre }}</a>,
                         {% endfor %}
+                    </h5>
+
+                    <h5 class="card-subtitle text-muted mt-1 mb-3" style="text-align: center">
+                        Average rating: <b>{{ score|floatformat:2 }}%</b>
                     </h5>
 
                     <div class="article-metadata">
@@ -45,12 +49,12 @@
         {% if reviews %}
             <h1 class="mt-3" style="text-align: center">Reviews</h1>
             <div class="col text-center">
-                <a class="btn btn-success btn-add-review" href="{% url 'review-add' book.pk %}">Add Your Own Review</a>
+                <a class="btn btn-success btn-add-review" style="width: 100%" href="{% url 'review-add' book.pk %}">Add Your Own Review</a>
             </div>
             <hr/>
         {% else %}
             <div class="col text-center">
-                <a class="btn btn-success btn-add-review" href="{% url 'review-add' book.pk %}">Add First Review!</a>
+                <a class="btn btn-success btn-add-review" style="width: 100%" href="{% url 'review-add' book.pk %}">Add First Review!</a>
             </div>
             <hr/>
         {% endif %}
@@ -61,7 +65,8 @@
             <img class="rounded-circle article-img" src="{{ review.creator.profile.image.url }}">
             <div class="media-body">
                 <div class="article-metadata">
-                    <a class="mr-2" href="{% url 'user-review' review.creator.username %}">{{ review.creator.username }}</a>
+                    <b>{{ review.rating }} / 10</b>
+                    <a class="mr-2 ml-2" href="{% url 'user-review' review.creator.username %}">{{ review.creator.username }}</a>
                     <small class="text-muted" style="float: right">{{ review.date_posted|date:"F d, Y" }}</small>
                 </div>
                 <h3><a class="article-title" href="{% url 'review-detail' review.pk %}">{{ review.title }}</a></h3>

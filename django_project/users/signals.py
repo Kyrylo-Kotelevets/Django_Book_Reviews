@@ -7,6 +7,9 @@ from .models import Profile
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
+    """
+    Creates user profile aif not exists
+    """
     try:
         instance.profile.save()
     except ObjectDoesNotExist:
@@ -15,4 +18,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, *args, **kwargs):
+    """
+    Saves user profile after creating
+    """
     instance.profile.save()

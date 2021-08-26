@@ -15,7 +15,7 @@
     <hr/>
 
     {% if search_val %}
-        {% if reviews %}
+        {% if books %}
             <h2 style="text-align: center">Search results for "{{ search_val }}"</h2>
         {% else %}
             <h2 style="text-align: center">Nothing to show for "{{ search_val }}"</h2>
@@ -40,8 +40,7 @@
             <div class="media-body">
 
                 <div class="article-metadata">
-                    <a class="mr-2" style="font-size: 30px" href="{% url 'book-detail' book.id %}">{{ book.title }}</a>
-                    <h6 class="text-muted" style="float: right">Rating: {{ book.rating }}</h6>
+                    <a class="mr-2" style="font-size: 20px" href="{% url 'book-detail' book.id %}">{{ book.title }}</a>
                 </div>
 
                 <h5>Authors:</h5>
@@ -58,6 +57,20 @@
                     {% endfor %}
                 </ul>
             </div>
+
+            {% if book.score > 7 %}
+                <div class="rating" style="background-color: green">
+                    <b style="margin: 7px">{{ book.score|floatformat:2 }}%</b>
+                </div>
+            {% elif book.score > 4 %}
+                <div class="rating" style="background-color: darkorange">
+                    <b style="margin: 7px">{{ book.score|floatformat:2 }}%</b>
+                </div>
+            {% else %}
+                <div class="rating" style="background-color: #ff4d4d">
+                    <b style="margin: 7px">{{ book.score|floatformat:2 }}%</b>
+                </div>
+            {% endif %}
         </article>
     {% endfor %}
 

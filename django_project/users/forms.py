@@ -5,6 +5,9 @@ from .models import Profile
 
 
 class UserRegisterForm(UserCreationForm):
+    """
+    Django Form for User Model used for registration
+    """
     email = forms.EmailField()
 
     class Meta:
@@ -13,6 +16,9 @@ class UserRegisterForm(UserCreationForm):
 
 
 class UserUpdateForm(forms.ModelForm):
+    """
+    Django Form for User Model used for updating data
+    """
     email = forms.EmailField()
 
     class Meta:
@@ -21,6 +27,9 @@ class UserUpdateForm(forms.ModelForm):
 
 
 class ProfileUpdateForm(forms.ModelForm):
+    """
+    Django Form for Profile Model used for updating data
+    """
     class Meta:
         model = Profile
         fields = ['image']
