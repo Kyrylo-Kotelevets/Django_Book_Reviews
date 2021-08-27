@@ -12,4 +12,5 @@ class Author(models.Model):
         unique_together = ('first_name', 'last_name', )
 
     def __str__(self):
-        return self.first_name + " " + self.last_name
+        return "{} {}".format(self.first_name, self.last_name)
+

@@ -2,10 +2,18 @@
 
 {% block search %}
     <form class="nav-item nav-link" action="{% url 'blog-home' %}" method="GET">
-        {% if search_val %}
-            <input name="search" type="text" value="{{ search_val }}">
+        {% if authors_search_val %}
+            <input name="authors_search" type="text" value="{{ authors_search_val }}">
         {% else %}
-            <input name="search" type="text" placeholder="Type for search...">
+            <input name="authors_search" type="text" placeholder="Authors search...">
+        {% endif %}
+    </form>
+
+    <form class="nav-item nav-link" action="{% url 'blog-home' %}" method="GET">
+        {% if title_search_val %}
+            <input name="title_search" type="text" value="{{ title_search_val }}">
+        {% else %}
+            <input name="title_search" type="text" placeholder="Title search...">
         {% endif %}
     </form>
 {% endblock %}
@@ -14,11 +22,19 @@
     <h2 style="text-align: center">All books</h2>
     <hr/>
 
-    {% if search_val %}
+    {% if title_search_val %}
         {% if books %}
-            <h2 style="text-align: center">Search results for "{{ search_val }}"</h2>
+            <h2 style="text-align: center">Search results for "{{ title_search_val }}" titles</h2>
         {% else %}
-            <h2 style="text-align: center">Nothing to show for "{{ search_val }}"</h2>
+            <h2 style="text-align: center">Nothing to show for "{{ title_search_val }}" titles</h2>
+        {% endif %}
+    {% endif %}
+
+    {% if authors_search_val %}
+        {% if books %}
+            <h2 style="text-align: center">Search results for "{{ authors_search_val }}" authors</h2>
+        {% else %}
+            <h2 style="text-align: center">Nothing to show for "{{ authors_search_val }}" authors</h2>
         {% endif %}
     {% endif %}
 

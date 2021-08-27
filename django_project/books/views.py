@@ -38,20 +38,24 @@ class BookListView(ListView):
         """
         Save search parameter
         """
-        self.search = request.GET.get('search')
+        self.authors_search = request.GET.get('authors_search')
+        self.title_search = request.GET.get('title_search')
         return super().setup(request, *args, **kwargs)
 
-    def get_queryset(self) -> QuerySet:
+    def get_queryset(self):
         """
         Filter books by title and author when parameter is provided,
         otherwise, return default all books
         """
         queryset = super().get_queryset()
-        queryset = queryset.annotate(score=Avg('review__rating')).order_by('-score')
 
-        if self.search:
-            return queryset.filter(title__icontains=self.search)
+        if self.title_search:
+            queryset = Book.find_by_title(self.title_search, queryset)
 
+        if self.authors_search:
+            queryset = Book.find_by_author(self.authors_search, queryset)
+
+        queryset = Book.calculate_score(queryset)
         return queryset
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -59,7 +63,8 @@ class BookListView(ListView):
         Inserts search and moderator rights parameters into template context
         """
         context = super().get_context_data(object_list=object_list, **kwargs)
-        context['search_val'] = self.request.GET.get('search')
+        context['title_search_val'] = self.request.GET.get('title_search')
+        context['authors_search_val'] = self.request.GET.get('authors_search')
         context['is_moderator'] = is_moderator(self.request)
         return context
 

@@ -3,6 +3,8 @@ from datetime import date
 from PIL import Image
 from authors.models import Author
 from django.db import models
+from django.db.models import Avg
+from django.db.models import Q
 from genres.models import Genre
 
 
@@ -39,6 +41,38 @@ class Book(models.Model):
 
     @property
     def short_title(self):
+        """
+        Used for pretty output in big lists
+        """
         if len(self.title) < 25:
             return self.title
         return self.title[:25] + '...'
+
+    @classmethod
+    def find_by_title(cls, title: str, queryset=None):
+        """
+        Return books by matching title
+        """
+        if queryset is not None:
+            return queryset.filter(title__icontains=title)
+        return cls.objects.filter(title__icontains=title)
+
+    @classmethod
+    def find_by_author(cls, name: str, queryset=None):
+        """
+        Return books by matching author
+        """
+        if queryset is not None:
+            return queryset.filter(Q(authors__first_name__icontains=name) |
+                                   Q(authors__last_name__icontains=name)).prefetch_related('authors')
+        return cls.objects.filter(Q(authors__first_name__icontains=name),
+                                  Q(authors__last_name__icontains=name)).prefetch_related('authors')
+
+    @classmethod
+    def calculate_score(cls, queryset=None):
+        """
+        Calculates average rating over book reviews
+        """
+        if queryset is not None:
+            return queryset.annotate(score=Avg('review__rating')).order_by('-score')
+        return cls.objects.annotate(score=Avg('review__rating')).order_by('-score')

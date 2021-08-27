@@ -14,7 +14,7 @@ from .views import (
 )
 
 urlpatterns = [
-    path('comments/', CommentListView.as_view(), name='comment-list'),
+    path('all/', CommentListView.as_view(), name='comment-list'),
     path('review/<int:pk>/add', views.CommentCreateView.as_view(), name='comment-add'),
     path('<int:pk>/', CommentDetailView.as_view(), name='comment-detail'),
     path('<int:pk>/update/', CommentUpdateView.as_view(), name='comment-update'),
