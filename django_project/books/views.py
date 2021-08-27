@@ -31,7 +31,7 @@ class BookListView(ListView):
     """
     model = Book
     context_object_name = 'books'
-    template_name = 'books/home.html'
+    template_name = 'books/book_list.html'
     paginate_by = 10
 
     def setup(self, request, *args, **kwargs):
@@ -44,7 +44,7 @@ class BookListView(ListView):
 
     def get_queryset(self):
         """
-        Filter books by title and author when parameter is provided,
+        Filter books by title or author when parameter is provided,
         otherwise, return default all books
         """
         queryset = super().get_queryset()
@@ -91,7 +91,6 @@ class BookDetailView(DetailView):
         context['page_obj'] = paginator.get_page(page_number)
         context['reviews'] = paginator.get_page(page_number)
         context['score'] = Review.get_book_reviews(self.object.pk).aggregate(Avg('rating'))['rating__avg']
-        print(context['score'])
         context['is_moderator'] = is_moderator(self.request)
         return context
 
