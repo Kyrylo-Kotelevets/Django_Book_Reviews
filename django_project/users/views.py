@@ -1,11 +1,12 @@
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Profile
-from django.contrib.auth.models import User
+
 
 def register(request):
     """
@@ -23,6 +24,31 @@ def register(request):
     else:
         form = UserRegisterForm()
     return render(request, 'users/register.html', {'form': form})
+
+
+def user_login(request):
+    """
+    Login View
+    """
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=username, password=password)
+
+        if user:
+            if user.is_active:  # If user account available
+                login(request, user)  # Save user in session
+
+                messages.success(request, 'Welcome, {}'.format(user.username))
+                return redirect('blog-home')
+            else:
+                messages.error(request, 'Login Failed')
+        else:
+            messages.error(request, 'Invalid login or password')
+
+    return render(request, 'users/login.html')
 
 
 @login_required
@@ -43,12 +69,6 @@ def profile(request):
             return redirect('profile')
     else:
         u_form = UserUpdateForm(instance=request.user)
-
-        try:
-            request.user.profile.save()
-        except ObjectDoesNotExist:
-            Profile.objects.create(user=request.user)
-
         p_form = ProfileUpdateForm(instance=request.user.profile)
 
     context = {
@@ -57,3 +77,9 @@ def profile(request):
     }
 
     return render(request, 'users/profile.html', context)
+
+
+@login_required
+def user_logout(request):
+    logout(request)  # Delete user from session
+    return render(request, 'users/logout.html')

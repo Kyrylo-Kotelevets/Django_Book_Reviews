@@ -109,7 +109,6 @@ class BookCreateView(ModeratorRequiredMixin, CreateView):
         """
         book = Book(title=form.cleaned_data['title'],
                     summary=form.cleaned_data['summary'],
-                    rating=form.cleaned_data['rating'],
                     publication_year=form.cleaned_data['publication_year'],
                     cover_img=form.cleaned_data['cover_img'])
         book.save()

@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 
+from django.contrib import messages
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -31,7 +33,6 @@ ALLOWED_HOSTS = ['*']
 AUTHENTICATION_BACKENDS = ['users.auth.CustomAuthBackend']
 
 # Application definition
-
 INSTALLED_APPS = [
     'authors.apps.AuthorsConfig',
     'genres.apps.GenresConfig',
@@ -152,3 +153,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = 'blog-home'
 LOGIN_URL = 'login'
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+}
