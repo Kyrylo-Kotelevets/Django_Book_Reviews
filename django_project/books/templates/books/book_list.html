@@ -1,40 +1,28 @@
 {% extends "base.html" %}
 
 {% block search %}
-    <form class="nav-item nav-link" action="{% url 'blog-home' %}" method="GET">
-        {% if authors_search_val %}
-            <input name="authors_search" type="text" value="{{ authors_search_val }}">
-        {% else %}
-            <input name="authors_search" type="text" placeholder="Authors search...">
-        {% endif %}
-    </form>
-
-    <form class="nav-item nav-link" action="{% url 'blog-home' %}" method="GET">
-        {% if title_search_val %}
-            <input name="title_search" type="text" value="{{ title_search_val }}">
-        {% else %}
-            <input name="title_search" type="text" placeholder="Title search...">
-        {% endif %}
-    </form>
+    {% with 'blog-home' as base_url %}
+        {% include 'search.html' %}
+    {% endwith %}
 {% endblock %}
 
 {% block content %}
     <h2 style="text-align: center">All books</h2>
     <hr/>
 
-    {% if title_search_val %}
+    {% if search_by == 'title' %}
         {% if books %}
-            <h2 style="text-align: center">Search results for "{{ title_search_val }}" titles</h2>
+            <h2 class="center-title">Search results for "{{ search_pattern }}" titles</h2>
         {% else %}
-            <h2 style="text-align: center">Nothing to show for "{{ title_search_val }}" titles</h2>
+            <h2 class="center-title">Nothing to show for "{{ search_pattern }}" titles</h2>
         {% endif %}
     {% endif %}
 
-    {% if authors_search_val %}
+    {% if search_by == 'author' %}
         {% if books %}
-            <h2 style="text-align: center">Search results for "{{ authors_search_val }}" authors</h2>
+            <h2 class="center-title">Search results for "{{ search_pattern }}" authors</h2>
         {% else %}
-            <h2 style="text-align: center">Nothing to show for "{{ authors_search_val }}" authors</h2>
+            <h2 class="center-title">Nothing to show for "{{ search_pattern }}" authors</h2>
         {% endif %}
     {% endif %}
 
@@ -89,26 +77,14 @@
             {% endif %}
         </article>
     {% endfor %}
-
-    {% if is_paginated %}
-        <div style="margin: auto;text-align: center;">
-            {% if page_obj.has_previous %}
-                <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
-                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-            {% endif %}
-
-            {% for num in page_obj.paginator.page_range %}
-                {% if page_obj.number == num %}
-                    <a class="btn btn-primary mb-4" href="?page={{ num }}">{{ num }}</a>
-                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                    <a class="btn btn-outline-info mb-4" href="?page={{ num }}">{{ num }}</a>
-                {% endif %}
-            {% endfor %}
-
-            {% if page_obj.has_next %}
-                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.next_page_number }}">Next</a>
-                <a class="btn btn-outline-info mb-4" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-            {% endif %}
-        </div>
-    {% endif %}
 {% endblock content %}
+
+{% block pagination %}
+        {% if search_by %}
+            {% with '&search_pattern='|add:search_pattern|add:'&search_by='|add:search_by as base_url %}
+                {% include 'pagination.html' %}
+            {% endwith %}
+        {% else %}
+            {% include 'pagination.html' %}
+        {% endif %}
+{% endblock pagination %}

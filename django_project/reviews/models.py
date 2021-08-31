@@ -38,6 +38,15 @@ class Review(models.Model):
         return self.text[:128] + '...'
 
     @classmethod
+    def find_by_title(cls, title: str, queryset=None):
+        """
+        Return reviews by matching title
+        """
+        if queryset is not None:
+            return queryset.filter(title__icontains=title)
+        return cls.objects.filter(title__icontains=title)
+
+    @classmethod
     def get_book_reviews(cls, pk: int):
         return cls.objects.filter(book__pk=pk)
 

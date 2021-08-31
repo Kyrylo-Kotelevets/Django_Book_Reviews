@@ -5,7 +5,6 @@ Views for Books App
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Avg
-from django.db.models import QuerySet
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import (
@@ -21,7 +20,7 @@ from helpers.permission_validators import (
 )
 from reviews.models import Review
 
-from .forms import BookForm
+from .forms import BookForm, BookSearchForm
 from .models import Book
 
 
@@ -34,12 +33,15 @@ class BookListView(ListView):
     template_name = 'books/book_list.html'
     paginate_by = 10
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.form = None
+
     def setup(self, request, *args, **kwargs):
         """
-        Save search parameter
+        Save URL Parameters to Object
         """
-        self.authors_search = request.GET.get('authors_search')
-        self.title_search = request.GET.get('title_search')
+        self.form = BookSearchForm(request.GET)
         return super().setup(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -49,11 +51,12 @@ class BookListView(ListView):
         """
         queryset = super().get_queryset()
 
-        if self.title_search:
-            queryset = Book.find_by_title(self.title_search, queryset)
-
-        if self.authors_search:
-            queryset = Book.find_by_author(self.authors_search, queryset)
+        if self.form.is_valid():
+            pattern = self.form.cleaned_data.get('search_pattern')
+            if self.form.cleaned_data.get('search_by') == 'title':
+                queryset = Book.find_by_title(pattern, queryset)
+            if self.form.cleaned_data.get('search_by') == 'author':
+                queryset = Book.find_by_author(pattern, queryset)
 
         queryset = Book.calculate_score(queryset)
         return queryset
@@ -63,9 +66,19 @@ class BookListView(ListView):
         Inserts search and moderator rights parameters into template context
         """
         context = super().get_context_data(object_list=object_list, **kwargs)
-        context['title_search_val'] = self.request.GET.get('title_search')
-        context['authors_search_val'] = self.request.GET.get('authors_search')
+
+        if self.form.is_valid() and self.form.cleaned_data.get('search_by') == 'title':
+            context['search_pattern'] = self.form.cleaned_data.get('search_pattern')
+            context['search_by'] = 'title'
+        elif self.form.is_valid() and self.form.cleaned_data.get('search_by') == 'author':
+            context['search_pattern'] = self.form.cleaned_data.get('search_pattern')
+            context['search_by'] = 'author'
+        else:
+            context['search_pattern'] = None
+            context['search_by'] = None
+
         context['is_moderator'] = is_moderator(self.request)
+        context['form'] = self.form
         return context
 
 

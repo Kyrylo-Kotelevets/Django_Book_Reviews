@@ -74,5 +74,5 @@ class Book(models.Model):
         Calculates average rating over book reviews
         """
         if queryset is not None:
-            return queryset.annotate(score=Avg('review__rating')).order_by('-score')
-        return cls.objects.annotate(score=Avg('review__rating')).order_by('-score')
+            return queryset.annotate(score=Avg('review__rating')*10).order_by('-score')
+        return cls.objects.annotate(score=Avg('review__rating')*10).order_by('-score')

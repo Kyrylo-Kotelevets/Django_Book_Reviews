@@ -22,7 +22,7 @@ from helpers.permission_validators import (
     OwnerOrModeratorRequiredMixin,
 )
 
-from .forms import ReviewForm
+from .forms import ReviewForm, ReviewSearchForm
 from .models import Review
 from comments.models import Comment
 
@@ -36,16 +36,28 @@ class ReviewListView(ListView):
     context_object_name = 'reviews'
     template_name = 'reviews/review_list.html'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.form = None
+
+    def setup(self, request, *args, **kwargs):
+        """
+        Save URL Parameters to Object
+        """
+        self.form = ReviewSearchForm(request.GET)
+        return super().setup(request, *args, **kwargs)
+
     def get_queryset(self):
         """
         Filter books by title when parameter is provided,
         otherwise, return default all reviews
         """
-        search = self.request.GET.get('search')
         queryset = super().get_queryset()
 
-        if search:
-            return queryset.filter(title__icontains=search)
+        if self.form.is_valid():
+            pattern = self.form.cleaned_data.get('search_pattern')
+            if self.form.cleaned_data.get('search_by') == 'title':
+                queryset = Review.find_by_title(pattern, queryset)
 
         return queryset
 
@@ -54,8 +66,17 @@ class ReviewListView(ListView):
         Inserts search and moderator rights parameters into template context
         """
         context = super().get_context_data(**kwargs)
+
+        if self.form.is_valid() and self.form.cleaned_data.get('search_by') == 'title':
+            context['search_pattern'] = self.form.cleaned_data.get('search_pattern')
+            context['search_by'] = 'title'
+        else:
+            context['search_pattern'] = None
+            context['search_by'] = None
+
         context['search_val'] = self.request.GET.get('search')
         context['is_moderator'] = is_moderator(self.request)
+        context['form'] = self.form
         return context
 
 

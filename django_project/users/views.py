@@ -8,7 +8,7 @@ from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Profile
 
 
-def register(request):
+def user_register(request):
     """
     User Registration
     """
@@ -52,10 +52,11 @@ def user_login(request):
 
 
 @login_required
-def profile(request):
+def user_profile(request):
     """
     User Profile Updating and Displaying
     """
+
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST,
                                 instance=request.user)
@@ -65,6 +66,7 @@ def profile(request):
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
             p_form.save()
+
             messages.success(request, f'Your account has been updated!')
             return redirect('profile')
     else:

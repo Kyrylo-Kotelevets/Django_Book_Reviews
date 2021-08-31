@@ -1,0 +1,12 @@
+{% load crispy_forms_tags %}
+
+<form action="{% url base_url %}" method="GET">
+  {% csrf_token %}
+  <fieldset class="form-group">
+    <legend class="border-bottom mb-4" style="text-align: center">Search Pannel</legend>
+    {{ form|crispy }}
+  </fieldset>
+  <div class="form-group">
+    <button class="btn btn-outline-info" type="submit" style="width: 100%">Search</button>
+  </div>
+</form>
