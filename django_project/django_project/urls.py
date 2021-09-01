@@ -8,6 +8,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('reviews.urls')),
     path('accounts/', include('users.urls')),
+
+    path('api/authors/', include('authors.api_urls')),
+    path('api/genres/', include('genres.api_urls')),
+    path('api/books/', include('books.api_urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler403 = handler_views.handler403

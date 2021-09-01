@@ -13,6 +13,10 @@ import os
 from pathlib import Path
 
 from django.contrib import messages
+from environs import Env
+
+env = Env()
+env.read_env('.env')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,10 +26,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-7=-!@&n9j%-1htf-f_sb0ocxdngfx)y%7e&kf+#(hv8p2n9d&p'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', True)
 
 ALLOWED_HOSTS = ['*']
 
@@ -44,6 +48,7 @@ INSTALLED_APPS = [
 
     'crispy_forms',
     'django_extensions',
+    'rest_framework',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -89,12 +94,12 @@ WSGI_APPLICATION = 'django_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'django_books_db',
-        'USER': 'postgres',
-        'PASSWORD': '1331',
-        'HOST': 'localhost',
-        'PORT': '',
+        "ENGINE": env('SQL_ENGINE'),
+        "NAME": env('SQL_DATABASE'),
+        "USER": env('SQL_USER'),
+        "PASSWORD": env('SQL_PASSWORD'),
+        "HOST": env('SQL_HOST'),
+        "PORT": env('SQL_PORT'),
     }
 }
 

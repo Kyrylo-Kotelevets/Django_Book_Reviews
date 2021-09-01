@@ -86,10 +86,10 @@ def run():
     fill_authors(15)
 
     Book.objects.all().delete()
-    fill_books(55)
+    fill_books(15)
 
     Review.objects.all().delete()
-    fill_reviews(1000)
+    fill_reviews(100)
 
     Comment.objects.all().delete()
-    fill_comments(5000)
+    fill_comments(500)

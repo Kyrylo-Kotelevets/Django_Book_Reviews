@@ -1,3 +1,6 @@
+"""
+The module is used to describe database Book model
+"""
 from datetime import date
 
 from PIL import Image
@@ -10,7 +13,7 @@ from genres.models import Genre
 
 class Book(models.Model):
     """
-    Book Model
+    Entity Book Author
     """
     title = models.CharField(max_length=255)
     publication_year = models.IntegerField(default=date.today().year)
@@ -20,15 +23,15 @@ class Book(models.Model):
     authors = models.ManyToManyField(Author, blank=True, related_name='books')
     genres = models.ManyToManyField(Genre, blank=True, related_name='books')
 
-    def __repr__(self):
-        return self.short_title
-
     def __str__(self):
-        return self.title
+        """
+        Function for line display of the model
+        """
+        return self.short_title
 
     def save(self, *args, **kwargs):
         """
-        Resizes book cover image if its too bog
+        Function resizes book cover image if it is too big
         """
         super().save(*args, **kwargs)
 
@@ -47,6 +50,13 @@ class Book(models.Model):
         if len(self.title) < 25:
             return self.title
         return self.title[:25] + '...'
+
+    @classmethod
+    def get_all(cls):
+        """
+        The function returns all objects of the class
+        """
+        return cls.objects.all()
 
     @classmethod
     def find_by_title(cls, title: str, queryset=None):
@@ -76,3 +86,10 @@ class Book(models.Model):
         if queryset is not None:
             return queryset.annotate(score=Avg('review__rating')*10).order_by('-score')
         return cls.objects.annotate(score=Avg('review__rating')*10).order_by('-score')
+
+    class Meta:
+        """
+        Class container with metadata
+        """
+        verbose_name = "Book"
+        ordering = ('title',)
