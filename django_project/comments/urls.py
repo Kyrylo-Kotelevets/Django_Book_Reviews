@@ -4,10 +4,10 @@ Url Patterns for Comments App
 
 from django.urls import path
 
-from . import views
 from .views import (
     CommentListView,
     CommentDetailView,
+    CommentCreateView,
     CommentUpdateView,
     CommentDeleteView,
     UserCommentListView,
@@ -15,7 +15,7 @@ from .views import (
 
 urlpatterns = [
     path('all/', CommentListView.as_view(), name='comment-list'),
-    path('review/<int:pk>/add', views.CommentCreateView.as_view(), name='comment-add'),
+    path('review/<int:pk>/add', CommentCreateView.as_view(), name='comment-add'),
     path('<int:pk>/', CommentDetailView.as_view(), name='comment-detail'),
     path('<int:pk>/update/', CommentUpdateView.as_view(), name='comment-update'),
     path('<int:pk>/delete/', CommentDeleteView.as_view(), name='comment-delete'),

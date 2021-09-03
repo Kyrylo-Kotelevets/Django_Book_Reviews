@@ -1,11 +1,12 @@
 """
 Views for Reviews App
 """
-
+from comments.models import Comment
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
+from django.db.models import QuerySet
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
@@ -18,23 +19,21 @@ from django.views.generic import (
 )
 from helpers.permission_validators import (
     is_moderator,
-    ModeratorRequiredMixin,
     OwnerOrModeratorRequiredMixin,
 )
 
 from .forms import ReviewForm, ReviewSearchForm
 from .models import Review
-from comments.models import Comment
 
 
 class ReviewListView(ListView):
     """
-    Displays all reviews
+    Displays Reviews
     """
     model = Review
-    paginate_by = 10
     context_object_name = 'reviews'
     template_name = 'reviews/review_list.html'
+    paginate_by = 10
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -42,15 +41,19 @@ class ReviewListView(ListView):
 
     def setup(self, request, *args, **kwargs):
         """
-        Save URL Parameters to Object
+        Creates search form
         """
         self.form = ReviewSearchForm(request.GET)
         return super().setup(request, *args, **kwargs)
 
-    def get_queryset(self):
-        """
-        Filter books by title when parameter is provided,
-        otherwise, return default all reviews
+    def get_queryset(self) -> QuerySet:
+        """Filter books by title when parameter is provided,
+        otherwise, return all reviews
+
+        Returns
+        -------
+        QuerySet
+            Set of reviews
         """
         queryset = super().get_queryset()
 
@@ -61,11 +64,12 @@ class ReviewListView(ListView):
 
         return queryset
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, *, object_list=None, **kwargs) -> dict:
         """
-        Inserts search and moderator rights parameters into template context
+        Inserts form instance, search parameters and moderator rights
+        into template context
         """
-        context = super().get_context_data(**kwargs)
+        context = super().get_context_data(object_list=object_list, **kwargs)
 
         if self.form.is_valid() and self.form.cleaned_data.get('search_by') == 'title':
             context['search_pattern'] = self.form.cleaned_data.get('search_pattern')
@@ -114,7 +118,7 @@ class ReviewDetailView(DetailView):
     model = Review
     paginate_by = 10
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
         """
         Inserts page number, moderator/commentator rights and review comments into template context
         """
@@ -140,7 +144,7 @@ class ReviewCreateView(LoginRequiredMixin, CreateView):
     form_class = ReviewForm
     template_name = 'reviews/review_create_form.html'
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> HttpResponseRedirect:
         """
         Saves review and redirects to the review detail page with success message
         """
@@ -172,6 +176,10 @@ class ReviewDeleteView(OwnerOrModeratorRequiredMixin, DeleteView):
     model = Review
 
     def get_success_url(self):
+        """
+        Redirects to the home page with warning message
+        """
+        messages.warning(self.request, f'Review "{self.object.title}" "deleted')
         return reverse('review-list')
 
 

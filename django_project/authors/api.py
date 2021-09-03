@@ -9,7 +9,7 @@ from .serializers import AuthorListSerializer
 
 class AuthorList(generics.ListAPIView):
     """
-    API View for Author List
+    API View for Authors List
     """
     queryset = Author.get_all()
     serializer_class = AuthorListSerializer

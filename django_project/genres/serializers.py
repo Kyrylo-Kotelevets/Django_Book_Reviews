@@ -8,7 +8,7 @@ from .models import Genre
 
 class GenreListSerializer(serializers.ModelSerializer):
     """
-    Model serializer for the List of Genres
+    Serializer for a List of Genres
     """
     class Meta:
         """

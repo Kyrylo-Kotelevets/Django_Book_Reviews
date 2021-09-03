@@ -1,13 +1,13 @@
 """
 Views for Comments App
 """
-
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.db.models import QuerySet
 from django.views.generic import (
     ListView,
     DetailView,
@@ -26,12 +26,12 @@ from .models import Comment
 
 class CommentListView(ListView):
     """
-    Displays all comments
+    Displays Comments
     """
     model = Comment
-    paginate_by = 10
     context_object_name = 'comments'
     template_name = 'comments/comment_list.html'
+    paginate_by = 10
 
 
 class UserCommentListView(ListView):
@@ -39,19 +39,22 @@ class UserCommentListView(ListView):
     Displays user comments
     """
     model = Comment
-    paginate_by = 10
     context_object_name = 'comments'
     template_name = 'comments/user_comment.html'
+    paginate_by = 10
 
-    def get_queryset(self):
-        """
-        Returns user comments if user exists,
-        otherwise returns 404
+    def get_queryset(self) -> QuerySet:
+        """Get user comments
+
+        Returns
+        -------
+        QuerySet
+            Set of comments, owned by user if exists or 404
         """
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         return Comment.objects.filter(creator=user).order_by('-date_posted')
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
         """
         Inserts user into template context if user exists,
         otherwise returns 404
@@ -68,7 +71,7 @@ class CommentDetailView(DetailView):
     model = Comment
     paginate_by = 10
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
         """
         Inserts moderator rights into template context
         """
@@ -85,7 +88,7 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     form_class = CommentForm
     template_name = 'comments/comment_create_form.html'
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> HttpResponseRedirect:
         """
         Saves comment and redirects to the comment detail page with success message
         """

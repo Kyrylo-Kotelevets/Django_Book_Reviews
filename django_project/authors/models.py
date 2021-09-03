@@ -2,6 +2,7 @@
 The module is used to describe database Author model
 """
 from django.db import models
+from django.db.models import QuerySet
 
 
 class Author(models.Model):
@@ -11,16 +12,20 @@ class Author(models.Model):
     first_name = models.CharField(max_length=128)
     last_name = models.CharField(max_length=128)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Function for line display of the model
         """
         return "{} {}".format(self.first_name, self.last_name)
 
     @classmethod
-    def get_all(cls):
-        """
-        The function returns all objects of the class
+    def get_all(cls) -> QuerySet:
+        """Returns all objects of the class
+
+        Returns
+        -------
+        QuerySet
+            set that contains all authors
         """
         return cls.objects.all()
 

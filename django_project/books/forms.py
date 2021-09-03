@@ -1,7 +1,6 @@
 """
 Forms for Books App
 """
-
 from django import forms
 from django.forms.widgets import Textarea
 
@@ -10,18 +9,20 @@ from .models import Book
 
 class BookForm(forms.ModelForm):
     """
-    Form for Books Model
+    Form for Book Model
     """
-
     class Meta:
+        """
+        Class container with metadata
+        """
         model = Book
-        fields = ['title', 'summary', 'publication_year', 'cover_img', 'authors', 'genres']
+        fields = ('title', 'summary', 'publication_year', 'cover_img', 'authors', 'genres',)
         widgets = {'summary': Textarea}
 
 
 class BookSearchForm(forms.Form):
     """
-    Form for Books Search
+    Form for Book Search
     """
     SEARCH_BY = (
         ('title', 'Title'),

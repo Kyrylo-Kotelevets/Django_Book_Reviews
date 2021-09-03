@@ -1,5 +1,5 @@
 """
-Url Patterns for Books API
+Url Patterns for Genres API
 """
 from django.urls import path
 from .api import GenreList

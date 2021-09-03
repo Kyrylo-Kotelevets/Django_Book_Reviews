@@ -1,3 +1,6 @@
+"""
+Module with permission validation functions for users
+"""
 from django.http import HttpResponseForbidden
 
 

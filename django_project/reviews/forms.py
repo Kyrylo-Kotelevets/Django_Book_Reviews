@@ -1,3 +1,6 @@
+"""
+Forms for Reviews App
+"""
 from django import forms
 from django.forms.widgets import Textarea
 
@@ -9,6 +12,9 @@ class ReviewForm(forms.ModelForm):
     Form for Review Model
     """
     class Meta:
+        """
+        Class container with metadata
+        """
         model = Review
         fields = ['title', 'text', 'rating']
         widgets = {'text': Textarea}

@@ -1,10 +1,9 @@
 """
 Views for Books App
 """
-
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Avg
+from django.db.models import QuerySet
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import (
@@ -26,7 +25,7 @@ from .models import Book
 
 class BookListView(ListView):
     """
-    Displays books
+    Displays Books
     """
     model = Book
     context_object_name = 'books'
@@ -39,15 +38,19 @@ class BookListView(ListView):
 
     def setup(self, request, *args, **kwargs):
         """
-        Save URL Parameters to Object
+        Creates search form
         """
         self.form = BookSearchForm(request.GET)
         return super().setup(request, *args, **kwargs)
 
-    def get_queryset(self):
-        """
-        Filter books by title or author when parameter is provided,
-        otherwise, return default all books
+    def get_queryset(self) -> QuerySet:
+        """Filter books by title or author when parameter is provided,
+        otherwise, return all books
+
+        Returns
+        -------
+        QuerySet
+            Set of books, annotated with score field
         """
         queryset = super().get_queryset()
 
@@ -61,9 +64,10 @@ class BookListView(ListView):
         queryset = Book.calculate_score(queryset)
         return queryset
 
-    def get_context_data(self, *, object_list=None, **kwargs):
+    def get_context_data(self, *, object_list=None, **kwargs) -> dict:
         """
-        Inserts search and moderator rights parameters into template context
+        Inserts form instance, search and moderator rights parameters
+        into template context
         """
         context = super().get_context_data(object_list=object_list, **kwargs)
 
@@ -91,7 +95,7 @@ class BookDetailView(DetailView):
     template_name = 'books/book_detail.html'
     paginate_by = 10
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
         """
         Inserts page number, rating, moderator rights and book reviews into template context
         """
@@ -103,7 +107,7 @@ class BookDetailView(DetailView):
 
         context['page_obj'] = paginator.get_page(page_number)
         context['reviews'] = paginator.get_page(page_number)
-        context['score'] = Review.get_book_reviews(self.object.pk).aggregate(Avg('rating'))['rating__avg']
+        context['score'] = Review.get_book_score(self.object.pk)
         context['is_moderator'] = is_moderator(self.request)
         return context
 
@@ -116,7 +120,7 @@ class BookCreateView(ModeratorRequiredMixin, CreateView):
     form_class = BookForm
     template_name = 'books/book_create_form.html'
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> HttpResponseRedirect:
         """
         Saves book and redirects to the book detail page with success message
         """
@@ -157,7 +161,7 @@ class BookDeleteView(ModeratorRequiredMixin, DeleteView):
 
     def get_success_url(self):
         """
-        Redirects to the home page
+        Redirects to the home page with warning message
         """
         messages.warning(self.request, f'Book "{self.object.title}" "deleted')
         return reverse('blog-home')
