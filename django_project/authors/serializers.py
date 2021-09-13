@@ -16,3 +16,15 @@ class AuthorListSerializer(serializers.ModelSerializer):
         """
         model = Author
         fields = ("id", "last_name", "first_name",)
+
+
+class AuthorDetailSerializer(serializers.ModelSerializer):
+    """
+    Serializer for a single Author
+    """
+    class Meta:
+        """
+        Class container with metadata
+        """
+        model = Author
+        fields = ("id", "last_name", "first_name",)

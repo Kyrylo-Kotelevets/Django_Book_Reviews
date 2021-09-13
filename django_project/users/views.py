@@ -30,7 +30,6 @@ def user_login(request):
     """
     Login View
     """
-
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')

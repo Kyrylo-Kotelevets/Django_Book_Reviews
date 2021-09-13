@@ -3,12 +3,30 @@ from random import randint
 from authors.models import Author
 from books.models import Book
 from comments.models import Comment
+from users.models import Profile
 from django.contrib.auth.models import User
 from faker import Faker
 from genres.models import Genre
 from reviews.models import Review
 
 fake = Faker()
+
+
+def fill_users(count: int=10):
+    """
+    Creates random users
+    :param count: amount of users to create
+    """
+    for _ in range(count):
+        user = User.objects.create_user(fake.first_name(), password='testing1234')
+        user.is_superuser = False
+        user.is_staff = False
+        user.save()
+
+        profile = Profile(user=user,
+                          image='profile_pics/profile{}.jpeg'.format(randint(1, 4)))
+        profile.save()
+
 
 
 def fill_genres(count: int = 20):
@@ -87,6 +105,8 @@ def run():
 
     Book.objects.all().delete()
     fill_books(15)
+
+    fill_users(5)
 
     Review.objects.all().delete()
     fill_reviews(100)
